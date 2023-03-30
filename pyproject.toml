@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "Natural-Language-Processing"
+version = "0.1.0"
+description = ""
+authors = ["gravo-lan <alvintsolh@gmail.com>", "zifuyang <zifuy2026@student.cis.edu.hk>"]
+readme = "README.md"
+packages = [{include = "Natural-Language-Processing"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
