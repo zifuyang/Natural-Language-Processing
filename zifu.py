@@ -62,7 +62,7 @@ def semantic_analysis(text):
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
-def generate_text(seed_text, length):
+def generate_text(seed_text, length, order=1):
     generated_text = seed_text
     original_text = seed_text
     corrected_text = semantic_analysis(generated_text)
@@ -70,32 +70,41 @@ def generate_text(seed_text, length):
     lemmatized_tokens = lemmatize_tokens(corrected_tokens)
 
     chain = {}
-    for i in range(len(lemmatized_tokens)-1):
-        current_word = lemmatized_tokens[i]
-        next_word = lemmatized_tokens[i+1]
-        if current_word not in chain:
-            chain[current_word] = {}
-        if next_word not in chain[current_word]:
-            chain[current_word][next_word] = 0
-        chain[current_word][next_word] += 1
+    for i in range(len(lemmatized_tokens)-order):
+        current_words = tuple(lemmatized_tokens[i:i+order])
+        next_word = lemmatized_tokens[i+order]
+        if current_words not in chain:
+            chain[current_words] = {}
+        if next_word not in chain[current_words]:
+            chain[current_words][next_word] = 0
+        chain[current_words][next_word] += 1
     
+    current_words = tuple(lemmatized_tokens[:order])
     for i in range(length):
-        if current_word not in chain:
-            current_word = random.choice(lemmatized_tokens)
-        next_word = random.choices(list(chain[current_word].keys()), weights=list(chain[current_word].values()))[0]
+        if current_words not in chain:
+            current_words = tuple(random.choice(lemmatized_tokens) for i in range(order))
+        next_word = random.choices(list(chain[current_words].keys()), weights=list(chain[current_words].values()))[0]
         if next_word in string.punctuation or next_word in ["'s","'t","'ve","n't"]:
             generated_text += next_word
         else:
             generated_text += ' ' + next_word
-        current_word = next_word
+        current_words = current_words[1:] + tuple([next_word])
 
     return generated_text.replace(original_text, '').replace(' ``','')
 
 def main():
-    file_path = 'corpora/treasureisland.txt'
+    file_path = 'corpora/'+input('Enter the text file name: ')
     seed_text = load_text(file_path)
     generated_text = generate_text(seed_text, 100)
-    print(generated_text[2].upper()+generated_text[3:])
+    leading=0
+    for i in generated_text:
+        if not(i.lower() in string.ascii_lowercase):
+            leading+=1
+        else:
+            break
+    
+    print("\nThe results:---------------------------------------------------------------------")
+    print(generated_text[0+leading].upper()+generated_text[1+leading:])
 
 if __name__ == '__main__':
     main()
