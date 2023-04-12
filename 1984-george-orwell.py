@@ -53,7 +53,7 @@ def output_text(text):
                 line_length += len(word) + 1
 
 def main():
-    filename = "TreasureIsland.txt"
+    filename = "corpora/TreasureIsland.txt"
     words = read_file(filename)
     markov_chain = build_markov_chain(words)
     text = generate_text(markov_chain)

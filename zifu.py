@@ -92,7 +92,7 @@ def generate_text(seed_text, length):
     return generated_text.replace(original_text, '').replace(' ``','')
 
 def main():
-    file_path = 'treasureisland.txt'
+    file_path = 'corpora/treasureisland.txt'
     seed_text = load_text(file_path)
     generated_text = generate_text(seed_text, 100)
     print(generated_text)
