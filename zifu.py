@@ -83,7 +83,7 @@ def generate_text(seed_text, length):
         if current_word not in chain:
             current_word = random.choice(lemmatized_tokens)
         next_word = random.choices(list(chain[current_word].keys()), weights=list(chain[current_word].values()))[0]
-        if next_word in string.punctuation or next_word == "'s":
+        if next_word in string.punctuation or next_word in ["'s","'t","'ve","n't"]:
             generated_text += next_word
         else:
             generated_text += ' ' + next_word
@@ -95,7 +95,7 @@ def main():
     file_path = 'corpora/treasureisland.txt'
     seed_text = load_text(file_path)
     generated_text = generate_text(seed_text, 100)
-    print(generated_text)
+    print(generated_text[2].upper()+generated_text[3:])
 
 if __name__ == '__main__':
     main()
