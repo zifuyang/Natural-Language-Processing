@@ -97,16 +97,19 @@ def main():
 
     options = "o:"
     long_options = ["order="]
-    order=1
+    order = 1
 
     try:
-        arguments = getopt.getopt(argumentList, options, long_options)
-        for currentArgument, currentValue in arguments:
-            if currentArgument in ("-o", "--order"):
-                order = int(currentValue) if int(currentValue) > 1 else 1
+        arguments, _ = getopt.getopt(argumentList, options, long_options)
+        if len(arguments) > 0:
+            for currentArgument, currentValue in arguments:
+                if currentArgument in ("-o", "--order"):
+                    order = int(currentValue) if int(currentValue) > 1 else 1
+
     except getopt.error as err:
-        print (str(err))
+        print(str(err))
         sys.exit(2)
+
     file_path = 'corpora/'+input('Enter the text file name: ')
     seed_text = load_text(file_path)
     generated_text = generate_text(seed_text, 200, order)
