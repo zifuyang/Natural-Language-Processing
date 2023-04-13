@@ -1,4 +1,4 @@
-import nltk, string, random
+import nltk, string, random, getopt, sys
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -62,7 +62,7 @@ def semantic_analysis(text):
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
-def generate_text(seed_text, length, order=1):
+def generate_text(seed_text, length, order):
     generated_text = seed_text
     original_text = seed_text
     corrected_text = semantic_analysis(generated_text)
@@ -93,9 +93,23 @@ def generate_text(seed_text, length, order=1):
     return generated_text.replace(original_text, '').replace(' ``','')
 
 def main():
+    argumentList = sys.argv[1:]
+
+    options = "o:"
+    long_options = ["order="]
+    order=1
+
+    try:
+        arguments = getopt.getopt(argumentList, options, long_options)
+        for currentArgument, currentValue in arguments:
+            if currentArgument in ("-o", "--order"):
+                order = int(currentValue) if int(currentValue) > 1 else 1
+    except getopt.error as err:
+        print (str(err))
+        sys.exit(2)
     file_path = 'corpora/'+input('Enter the text file name: ')
     seed_text = load_text(file_path)
-    generated_text = generate_text(seed_text, 100)
+    generated_text = generate_text(seed_text, 200, order)
     leading=0
     for i in generated_text:
         if not(i.lower() in string.ascii_lowercase):
