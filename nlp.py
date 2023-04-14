@@ -1,7 +1,11 @@
-import nltk, string, random, getopt, sys
+import nltk, string, random, getopt, sys, os
 from nltk.corpus import wordnet, PlaintextCorpusReader
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+
+nltk.download('wordnet')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 
 def load_text(file_path):
     corpus = PlaintextCorpusReader(os.path.dirname(file_path), os.path.basename(file_path))
