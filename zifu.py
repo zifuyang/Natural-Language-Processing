@@ -1,12 +1,11 @@
 import nltk, string, random, getopt, sys
-from nltk.corpus import wordnet
+from nltk.corpus import wordnet, PlaintextCorpusReader
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 def load_text(file_path):
-    with open(file_path, 'r', encoding='utf-8') as f:
-        text = f.read()
-    return text
+    corpus = PlaintextCorpusReader(os.path.dirname(file_path), os.path.basename(file_path))
+    return corpus.raw()
 
 def tokenize_text(text):
     return word_tokenize(text)
