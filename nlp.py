@@ -3,18 +3,20 @@ from nltk.corpus import wordnet, PlaintextCorpusReader
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-nltk.download('wordnet')
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet', quiet=True)
+nltk.download('punkt', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet=True)
 
-def load_text(file_path):
+def load_text(file_path: str) -> str:
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File {file_path} not found")
     corpus = PlaintextCorpusReader(os.path.dirname(file_path), os.path.basename(file_path))
     return corpus.raw()
 
-def tokenize_text(text):
+def tokenize_text(text) -> list:
     return word_tokenize(text)
 
-def lemmatize_tokens(tokens):
+def lemmatize_tokens(tokens) -> list:
     lemmatizer = WordNetLemmatizer()
     lemmatized_tokens = []
     for token in tokens:
@@ -33,7 +35,7 @@ def lemmatize_tokens(tokens):
         lemmatized_tokens.append(corrected_token)
     return lemmatized_tokens
 
-def correct_word(word, pos_tag):
+def correct_word(word, pos_tag) -> str:
     if pos_tag.startswith('N') or pos_tag.startswith('V') or pos_tag.startswith('J'):
         if pos_tag.startswith('J'):
             pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives
@@ -65,7 +67,7 @@ def semantic_analysis(text):
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
-def generate_text(seed_text, length, order):
+def generate_text(seed_text, length: int, order: int) -> str:
     generated_text = seed_text
     original_text = seed_text
     corrected_text = semantic_analysis(generated_text)
@@ -95,26 +97,42 @@ def generate_text(seed_text, length, order):
 
     return generated_text.replace(original_text, '').replace(' ``','')
 
-def main():
+def main() -> None:
     argumentList = sys.argv[1:]
-
-    options = "o:"
-    long_options = ["order="]
+    file_path = None
     order = 1
 
     try:
-        arguments, _ = getopt.getopt(argumentList, options, long_options)
+        arguments, _ = getopt.getopt(argumentList, "hi:o:", ["ifile=", "order="])
         if len(arguments) > 0:
             for currentArgument, currentValue in arguments:
+                if currentArgument == "-h":
+                    print("Usage: python program.py -i <inputfile> -o <order>")
+                    sys.exit()
+                elif currentArgument in ("-i", "--ifile"):
+                    file_path = currentArgument
                 if currentArgument in ("-o", "--order"):
-                    order = int(currentValue) if int(currentValue) > 1 else 1
+                    try:
+                        order = int(currentValue)
+                        if order <= 1:
+                            raise ValueError("Order must be greater than 1")
+                    except ValueError as e:
+                        print(f"Invalid value for order: {e}")
+                        sys.exit(2)
 
     except getopt.error as err:
         print(str(err))
+        print("Usage: python program.py -i <inputfile> -o <order>")
         sys.exit(2)
 
-    file_path = 'corpora/'+input('Enter the text file name: ')
-    seed_text = load_text(file_path)
+    if not(file_path):
+        file_path = 'corpora/'+input('Enter the text file name: ')
+    try:
+        seed_text = load_text(file_path)
+    except FileNotFoundError as e:
+        print(f"File not found: {e}")
+        sys.exit(2)
+    
     generated_text = generate_text(seed_text, 200, order)
     leading=0
     for i in generated_text:
