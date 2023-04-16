@@ -104,13 +104,13 @@ def main() -> None:
     length=200
 
     try:
-        arguments, _ = getopt.getopt(argumentList, "hi:o:l:", ["ifile=", "order=", "length="])
+        arguments, _ = getopt.getopt(argumentList, "hi:o:f:l:", ["ifile=", "order=", "file=", "length="])
         if len(arguments) > 0:
             for currentArgument, currentValue in arguments:
                 if currentArgument == "-h":
                     print("Usage: python program.py -i <inputfile> -o <order>")
                     sys.exit()
-                elif currentArgument in ("-i", "--ifile"):
+                elif currentArgument in ("-i", "--ifile", "-f", "--file"):
                     file_path = currentValue
                 if currentArgument in ("-o", "--order"):
                     try:
