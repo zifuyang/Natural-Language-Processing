@@ -101,9 +101,10 @@ def main() -> None:
     argumentList = sys.argv[1:]
     file_path = None
     order = 1
+    length=200
 
     try:
-        arguments, _ = getopt.getopt(argumentList, "hi:o:", ["ifile=", "order="])
+        arguments, _ = getopt.getopt(argumentList, "hi:o:l:", ["ifile=", "order=", "length="])
         if len(arguments) > 0:
             for currentArgument, currentValue in arguments:
                 if currentArgument == "-h":
@@ -119,6 +120,14 @@ def main() -> None:
                     except ValueError as e:
                         print(f"Invalid value for order: {e}")
                         sys.exit(2)
+                elif currentArgument in ("-l", "--length"):
+                    try:
+                        length = int(currentValue)
+                        if length <= 1:
+                            raise ValueError("Length must be greater than 1")
+                    except ValueError as e:
+                        print(f"Invalid value for length: {e}")
+                        sys.exit(2)
 
     except getopt.error as err:
         print(str(err))
@@ -133,7 +142,7 @@ def main() -> None:
         print(f"File not found: {e}")
         sys.exit(2)
     
-    generated_text = generate_text(seed_text, 200, order)
+    generated_text = generate_text(seed_text, length, order)
     leading=0
     for i in generated_text:
         if not(i.lower() in string.ascii_lowercase):
