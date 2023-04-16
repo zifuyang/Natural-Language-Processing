@@ -110,7 +110,7 @@ def main() -> None:
                     print("Usage: python program.py -i <inputfile> -o <order>")
                     sys.exit()
                 elif currentArgument in ("-i", "--ifile"):
-                    file_path = currentArgument
+                    file_path = currentValue
                 if currentArgument in ("-o", "--order"):
                     try:
                         order = int(currentValue)
