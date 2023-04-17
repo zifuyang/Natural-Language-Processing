@@ -153,5 +153,17 @@ def main() -> None:
     print("\nThe results:---------------------------------------------------------------------")
     print(generated_text[0+leading].upper()+generated_text[1+leading:])
 
+    filename = input("\nEnter filename to write output to <Enter for skip>: ")
+    if filename:
+        with open(filename, 'w') as file:
+            words = (generated_text[0+leading].upper()+generated_text[1+leading:]).split()
+            line_length = 0
+            for word in words:
+                if line_length + len(word) + 1 > 80:
+                    file.write('\n')
+                    line_length = 0
+                file.write(word + ' ')
+                line_length += len(word) + 1
+
 if __name__ == '__main__':
     main()

@@ -2,8 +2,18 @@
 name = "Natural-Language-Processing"
 version = "0.1.0"
 description = ""
+license = "MIT"
 authors = ["gravo-lan <alvintsolh@gmail.com>", "zifuyang <zifuy2026@student.cis.edu.hk>"]
+maintainers = ["gravo-lan <alvintsolh@gmail.com>", "zifuyang <zifuy2026@student.cis.edu.hk>"]
 readme = "README.md"
+repository = "https://github.com/zifuyang/Natural-Language-Processing"
+keywords = ["nlp", "natural language processing", "markov chains", "markov chain"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English"
+]
 packages = [{include = "Natural-Language-Processing"}]
 
 [tool.poetry.dependencies]
