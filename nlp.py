@@ -165,5 +165,10 @@ def main() -> None:
                 file.write(word + ' ')
                 line_length += len(word) + 1
 
+def test():
+    print(generate_text(load_text("corpora/treasureisland.txt"), 200, 1))
+    print(generate_text(load_text("corpora/treasureisland.txt"), 200, 2))
+    print(generate_text(load_text("corpora/treasureisland.txt"), 200, 3))
+
 if __name__ == '__main__':
     main()
