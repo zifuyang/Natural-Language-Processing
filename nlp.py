@@ -169,9 +169,17 @@ def main() -> None:
                 line_length += len(word) + 1
 
 def test():
-    print(generate_text(load_text("corpora/treasureisland.txt"), 200, 1, True))
-    print(generate_text(load_text("corpora/treasureisland.txt"), 200, 2, True))
-    print(generate_text(load_text("corpora/treasureisland.txt"), 200, 3, True))
-
+    for i in [1,2,3]:
+        generated_text = generate_text(load_text("corpora/treasureisland.txt"), 200, i, True)
+        leading=0
+        for i in generated_text:
+            if not(i.lower() in string.ascii_lowercase):
+                leading+=1
+            else:
+                break
+        x=generated_text[0+leading].upper()+generated_text[1+leading:]
+        assert x[0] in string.ascii_uppercase
+        print(x)
+        
 if __name__ == '__main__':
     main()
