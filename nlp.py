@@ -9,10 +9,10 @@ def load_text(file_path: str) -> str:
     corpus = PlaintextCorpusReader(os.path.dirname(file_path), os.path.basename(file_path))
     return corpus.raw()
 
-def tokenize_text(text) -> list:
+def tokenize_text(text: str) -> list:
     return word_tokenize(text)
 
-def lemmatize_tokens(tokens) -> list:
+def lemmatize_tokens(tokens: str) -> list:
     lemmatizer = WordNetLemmatizer()
     lemmatized_tokens = []
     for token in tokens:
@@ -31,7 +31,7 @@ def lemmatize_tokens(tokens) -> list:
         lemmatized_tokens.append(corrected_token)
     return lemmatized_tokens
 
-def correct_word(word, pos_tag) -> str:
+def correct_word(word: str, pos_tag: str) -> str:
     if pos_tag.startswith('N') or pos_tag.startswith('V') or pos_tag.startswith('J'):
         if pos_tag.startswith('J'):
             pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives
@@ -58,12 +58,12 @@ def correct_word(word, pos_tag) -> str:
                 return word
     return word
 
-def semantic_analysis(text):
+def semantic_analysis(text: str) -> str:
     tokens = tokenize_text(text)
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
-def generate_text(seed_text, length: int, order: int, verbose: bool) -> str:
+def generate_text(seed_text: str, length: int, order: int, verbose: bool) -> str:
     nltk.download('wordnet', quiet=not(verbose))
     nltk.download('punkt', quiet=not(verbose))
     nltk.download('averaged_perceptron_tagger', quiet=not(verbose))
