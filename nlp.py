@@ -20,17 +20,6 @@ def load_text(file_path: str) -> str:
     corpus = PlaintextCorpusReader(os.path.dirname(file_path), os.path.basename(file_path))
     return corpus.raw()
 
-def tokenize_text(text: str) -> list:
-    """Tokenize text.
-
-    Args:
-        text (str): Text to tokenize.
-
-    Returns:
-        list: Tokens.
-    """
-    return word_tokenize(text)
-
 def lemmatize_tokens(tokens: str) -> list:
     """Lemmatize tokens using WordNet.
 
@@ -103,7 +92,7 @@ def semantic_analysis(text: str) -> str:
     Returns:
         str: Text with semantic analysis performed.
     """
-    tokens = tokenize_text(text)
+    tokens = word_tokenize(text)
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
@@ -126,7 +115,7 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool) -> str
     generated_text = seed_text
     original_text = seed_text
     corrected_text = semantic_analysis(generated_text)
-    corrected_tokens = tokenize_text(corrected_text)
+    corrected_tokens = word_tokenize(corrected_text)
     lemmatized_tokens = lemmatize_tokens(corrected_tokens)
 
     chain = {}
