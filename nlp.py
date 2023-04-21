@@ -4,15 +4,42 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 def load_text(file_path: str) -> str:
+    """Load text from a file.
+
+    Args:
+        file_path (str): Path to the file.
+
+    Raises:
+        FileNotFoundError: File not found.
+
+    Returns:
+        str: Text from the file.
+    """
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File {file_path} not found")
     corpus = PlaintextCorpusReader(os.path.dirname(file_path), os.path.basename(file_path))
     return corpus.raw()
 
 def tokenize_text(text: str) -> list:
+    """Tokenize text.
+
+    Args:
+        text (str): Text to tokenize.
+
+    Returns:
+        list: Tokens.
+    """
     return word_tokenize(text)
 
 def lemmatize_tokens(tokens: str) -> list:
+    """Lemmatize tokens using WordNet.
+
+    Args:
+        tokens (str): Tokens to lemmatize.
+
+    Returns:
+        list: Lemmatized tokens.
+    """
     lemmatizer = WordNetLemmatizer()
     lemmatized_tokens = []
     for token in tokens:
@@ -32,6 +59,15 @@ def lemmatize_tokens(tokens: str) -> list:
     return lemmatized_tokens
 
 def correct_word(word: str, pos_tag: str) -> str:
+    """Correct a word using WordNet.
+
+    Args:
+        word (str): Word to correct.
+        pos_tag (str): Part-of-speech tag of the word.
+
+    Returns:
+        str: Corrected word.
+    """
     if pos_tag.startswith('N') or pos_tag.startswith('V') or pos_tag.startswith('J'):
         if pos_tag.startswith('J'):
             pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives
@@ -59,11 +95,30 @@ def correct_word(word: str, pos_tag: str) -> str:
     return word
 
 def semantic_analysis(text: str) -> str:
+    """Perform semantic analysis on a text.
+
+    Args:
+        text (str): Text to perform semantic analysis on.
+
+    Returns:
+        str: Text with semantic analysis performed.
+    """
     tokens = tokenize_text(text)
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
 def generate_text(seed_text: str, length: int, order: int, verbose: bool) -> str:
+    """Generate text based on a seed text with Markov chains.
+
+    Args:
+        seed_text (str): Seed text to generate text from.
+        length (int): Length of the generated text.
+        order (int): Order of the Markov chain.
+        verbose (bool): Verbose mode.
+
+    Returns:
+        str: Generated text.
+    """
     nltk.download('wordnet', quiet=not(verbose))
     nltk.download('punkt', quiet=not(verbose))
     nltk.download('averaged_perceptron_tagger', quiet=not(verbose))
@@ -98,6 +153,12 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool) -> str
     return generated_text.replace(original_text, '').replace(' ``','')
 
 def main() -> None:
+    """Main function.
+
+    Raises:
+        ValueError: Order must be greater than 1
+        ValueError: Length must be greater than 0
+    """
     argumentList = sys.argv[1:]
     file_path = None
     order = 1
@@ -127,7 +188,7 @@ def main() -> None:
                     try:
                         length = int(currentValue)
                         if length <= 1:
-                            raise ValueError("Length must be greater than 1")
+                            raise ValueError("Length must be greater than 0")
                     except ValueError as e:
                         print(f"Invalid value for length: {e}")
                         sys.exit(2)
@@ -168,7 +229,8 @@ def main() -> None:
                 file.write(word + ' ')
                 line_length += len(word) + 1
 
-def test():
+def test() -> None:
+    """Test the program."""
     for i in [1,2,3]:
         generated_text = generate_text(load_text("corpora/treasureisland.txt"), 200, i, True)
         leading=0
