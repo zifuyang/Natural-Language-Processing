@@ -98,7 +98,7 @@ def semantic_analysis(text: str) -> str:
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
-def generate_text(seed_text: str, length: int, order: int, verbose: bool) -> str:
+def generate_text(seed_text: str, length: int, order: int, verbose: bool, temperature: int) -> str:
     """Generate text based on a seed text with Markov chains.
 
     Args:
@@ -134,7 +134,12 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool) -> str
     for i in range(length):
         if current_words not in chain:
             current_words = tuple(random.choice(lemmatized_tokens) for i in range(order))
-        next_word = random.choices(list(chain[current_words].keys()), weights=list(chain[current_words].values()))[0]
+
+        weights = list(chain[current_words].values())
+        if temperature > 0:
+            weights = [w ** (1 / temperature) for w in weights]
+        
+        next_word = random.choices(list(chain[current_words].keys()), weights=weights)[0]
         if next_word in string.punctuation or next_word in ["'s","'t","'ve","n't"]:
             generated_text += next_word
         else:
@@ -155,19 +160,20 @@ def main() -> None:
     order = 1
     length=200
     verbose=False
+    temperature=0.5
 
     try:
-        arguments, _ = getopt.getopt(argumentList, "hvi:o:f:l:", ["ifile=", "order=", "file=", "length="])
+        arguments, _ = getopt.getopt(argumentList, "hvi:o:f:l:t:", ["ifile=", "order=", "file=", "length=", "temperature="])
         if len(arguments) > 0:
             for currentArgument, currentValue in arguments:
                 if currentArgument == "-h":
                     print("Usage: python program.py -i <inputfile> -o <order>")
                     sys.exit()
-                if currentArgument == "-v":
+                elif currentArgument == "-v":
                     verbose=True
                 elif currentArgument in ("-i", "--ifile", "-f", "--file"):
                     file_path = currentValue
-                if currentArgument in ("-o", "--order"):
+                elif currentArgument in ("-o", "--order"):
                     try:
                         order = int(currentValue)
                         if order <= 1:
@@ -183,6 +189,14 @@ def main() -> None:
                     except ValueError as e:
                         print(f"Invalid value for length: {e}")
                         sys.exit(2)
+                elif currentArgument in ("-t", "--temperature"):
+                    try:
+                        temperature = int(currentValue)
+                        if length < 0:
+                            raise ValueError("Temperature must be greater than 0")
+                    except ValueError as e:
+                        print(f"Invalid value for temperature: {e}")
+                        sys.exit(2)
 
     except getopt.error as err:
         print(str(err))
@@ -197,7 +211,7 @@ def main() -> None:
         print(f"File not found: {e}")
         sys.exit(2)
     
-    generated_text = generate_text(seed_text, length, order, verbose)
+    generated_text = generate_text(seed_text, length, order, verbose, temperature)
     leading=0
     for i in generated_text:
         if not(i.lower() in string.ascii_lowercase):
@@ -223,7 +237,7 @@ def main() -> None:
 def test() -> None:
     """Test the program."""
     for i in [1,2,3]:
-        generated_text = generate_text(load_text("corpora/treasureisland.txt"), 200, i, True)
+        generated_text = generate_text(load_text("corpora/treasureisland.txt"), 200, i, True, 0.5)
         leading=0
         for i in generated_text:
             if not(i.lower() in string.ascii_lowercase):
