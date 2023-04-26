@@ -3,8 +3,6 @@ from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-__version__,__author__ = '0.1.0',"Alvin, Zifu"
-
 def load_text(file_path: str) -> str:
     """Load text from a file.
 
