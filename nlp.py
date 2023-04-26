@@ -1,5 +1,5 @@
 import nltk, string, random, getopt, sys, os
-from nltk.corpus import wordnet
+from nltk.corpus import wordnet, PlaintextCorpusReader
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
@@ -19,9 +19,8 @@ def load_text(file_path: str) -> str:
     """
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File {file_path} not found")
-    with open(file_path, 'r', encoding='utf-8') as f:
-        text = f.read()
-    return text
+    corpus = PlaintextCorpusReader(os.path.dirname(file_path), os.path.basename(file_path))
+    return corpus.raw()
 
 def lemmatize_tokens(tokens: str) -> list:
     """Lemmatize tokens using WordNet.
