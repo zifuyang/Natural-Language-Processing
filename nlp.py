@@ -20,8 +20,7 @@ def load_text(file_path: str) -> str:
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File {file_path} not found")
     with open(file_path, 'r', encoding='utf-8') as f:
-        text = f.read()
-    return text
+        return f.read()
 
 def lemmatize_tokens(tokens: str) -> list:
     """Lemmatize tokens using WordNet.
