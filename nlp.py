@@ -3,7 +3,7 @@ from nltk.corpus import wordnet, PlaintextCorpusReader
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-__version__,__author__ = '0.1.0',"Alvin, Zifu"
+__version__,__author__,__license__ = '0.1.0',"Alvin, Zifu","MIT License"
 
 def load_text(file_path: str) -> str:
     """Load text from a file.
