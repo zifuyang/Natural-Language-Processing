@@ -59,7 +59,7 @@ def correct_word(word: str, pos_tag: str) -> str:
     """
     if pos_tag.startswith('N') or pos_tag.startswith('V') or pos_tag.startswith('J'):
         if pos_tag.startswith('J'):
-            pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives
+            pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives to match wordnet's format
         synsets = wordnet.synsets(word, pos=pos_tag[0].lower())
         if synsets:
             lemmas = set()
@@ -67,15 +67,12 @@ def correct_word(word: str, pos_tag: str) -> str:
                 for lemma in synset.lemmas():
                     lemmas.add(lemma.name())
             if lemmas:
-                if pos_tag.startswith('J'):
-                    synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}'
-                else:
-                    synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}'
+                synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}'
                 try:
                     most_similar = sorted(lemmas, key=lambda x: wordnet.wup_similarity(synsets[0], wordnet.synset(synset_id)) or 0, reverse=True)
-                    if most_similar:
+                    if most_similar: #Check if a similar word exists
                         return most_similar[0]
-                    else:
+                    else: #Otherwise return the original word
                         return word
                 except (ValueError, nltk.corpus.reader.wordnet.WordNetError):
                     return word
