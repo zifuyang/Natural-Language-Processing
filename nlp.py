@@ -62,22 +62,14 @@ def correct_word(word: str, pos_tag: str) -> str:
             pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives to match wordnet's format
         synsets = wordnet.synsets(word, pos=pos_tag[0].lower())
         if synsets:
-            lemmas = set()
-            for synset in synsets:
-                for lemma in synset.lemmas():
-                    lemmas.add(lemma.name())
+            lemmas = {lemma.name() for synset in synsets for lemma in synset.lemmas()}
             if lemmas:
                 synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}'
                 try:
                     most_similar = sorted(lemmas, key=lambda x: wordnet.wup_similarity(synsets[0], wordnet.synset(synset_id)) or 0, reverse=True)
-                    if most_similar: #Check if a similar word exists
-                        return most_similar[0]
-                    else: #Otherwise return the original word
-                        return word
+                    return most_similar if most_similar else word #Return the most similar word if it exists
                 except (ValueError, nltk.corpus.reader.wordnet.WordNetError):
                     return word
-            else:
-                return word
     return word
 
 def semantic_analysis(text: str) -> str:
