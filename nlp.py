@@ -33,13 +33,13 @@ def lemmatize_tokens(tokens: str) -> list:
     lemmatized_tokens = []
     for token in tokens:
         pos_tag = nltk.pos_tag([token])[0][1]
-        if pos_tag.startswith('N'):
+        if pos_tag.startswith('N'): #NOUN
             lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.NOUN)
-        elif pos_tag.startswith('V'):
+        elif pos_tag.startswith('V'): #VERB
             lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.VERB)
-        elif pos_tag.startswith('J'):
+        elif pos_tag.startswith('J'): #ADJECTIVE
             lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.ADJ)
-        elif pos_tag.startswith('R'):
+        elif pos_tag.startswith('R'): #ADVERB
             lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.ADV)
         else:
             lemmatized_token = token
