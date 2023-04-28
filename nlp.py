@@ -97,9 +97,7 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool, temper
     Returns:
         str: Generated text.
     """
-    nltk.download('wordnet', quiet=not(verbose))
-    nltk.download('punkt', quiet=not(verbose))
-    nltk.download('averaged_perceptron_tagger', quiet=not(verbose))
+    nltk.download('wordnet punkt averaged_perceptron_tagger'.split(), quiet=not(verbose))
 
     generated_text = seed_text
     original_text = seed_text
