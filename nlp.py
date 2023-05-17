@@ -75,7 +75,7 @@ def semantic_analysis(text: str) -> str:
     lemmatized_tokens = lemmatize_tokens(tokens)
     return ' '.join(lemmatized_tokens)
 
-def generate_text(seed_text: str, length: int, order: int, verbose: bool, temperature: int) -> str:
+def generate_text(seed_text: str, length: int, order: int, verbose: bool, temperature: float) -> str:
     """Generate text based on a seed text with Markov chains.
 
     Args:
