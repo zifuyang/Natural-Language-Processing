@@ -47,7 +47,7 @@ def correct_word(word: str, pos_tag: str) -> str:
     Returns:
         str: Corrected word.
     """
-    if pos_tag.startswith('N') or pos_tag.startswith('V') or pos_tag.startswith('J'):
+    if pos_tag[0] in ('N', 'V', 'J'):
         if pos_tag.startswith('J'):
             pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives to match wordnet's format
         synsets = wordnet.synsets(word, pos=pos_tag[0].lower())
