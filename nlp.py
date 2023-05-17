@@ -52,9 +52,9 @@ def correct_word(word: str, pos_tag: str) -> str | list[str]:
             pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives to match wordnet's format
         synsets = wordnet.synsets(word, pos=pos_tag[0].lower())
         if synsets:
-            lemmas = {lemma.name() for synset in synsets for lemma in synset.lemmas()} # type: ignore
+            lemmas = {lemma.name() for synset in synsets for lemma in synset.lemmas()} # pyright: ignore[reportOptionalMemberAccess]
             if lemmas:
-                synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}' # type: ignore
+                synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}' # pyright: ignore[reportOptionalMemberAccess]
                 try:
                     most_similar = sorted(lemmas, key=lambda x: wordnet.wup_similarity(synsets[0], wordnet.synset(synset_id)) or 0, reverse=True)
                     return most_similar if most_similar else word #Return the most similar word if it exists
