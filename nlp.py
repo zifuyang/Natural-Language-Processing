@@ -1,4 +1,4 @@
-import nltk, string, random, getopt, sys, os
+import nltk, string, random, sys, os, argparse
 from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -30,21 +30,11 @@ def lemmatize_tokens(tokens: str) -> list:
         list: Lemmatized tokens.
     """
     lemmatizer = WordNetLemmatizer()
-    lemmatized_tokens = []
-    for token in tokens:
-        pos_tag = nltk.pos_tag([token])[0][1]
-        if pos_tag.startswith('N'): #NOUN
-            lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.NOUN)
-        elif pos_tag.startswith('V'): #VERB
-            lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.VERB)
-        elif pos_tag.startswith('J'): #ADJECTIVE
-            lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.ADJ)
-        elif pos_tag.startswith('R'): #ADVERB
-            lemmatized_token = lemmatizer.lemmatize(token, pos=wordnet.ADV)
-        else:
-            lemmatized_token = token
-        corrected_token = correct_word(lemmatized_token, pos_tag)
-        lemmatized_tokens.append(corrected_token)
+    lemmatized_tokens = [lemmatizer.lemmatize(token, pos=wordnet.NOUN) if pos_tag.startswith('N') else
+                     lemmatizer.lemmatize(token, pos=wordnet.VERB) if pos_tag.startswith('V') else
+                     lemmatizer.lemmatize(token, pos=wordnet.ADJ) if pos_tag.startswith('J') else
+                     lemmatizer.lemmatize(token, pos=wordnet.ADV) if pos_tag.startswith('R') else
+                     token for token, pos_tag in nltk.pos_tag(tokens)]
     return lemmatized_tokens
 
 def correct_word(word: str, pos_tag: str) -> str:
@@ -109,10 +99,7 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool, temper
     for i in range(len(lemmatized_tokens)-order):
         current_words = tuple(lemmatized_tokens[i:i+order])
         next_word = lemmatized_tokens[i+order]
-        if current_words not in chain:
-            chain[current_words] = {}
-        if next_word not in chain[current_words]:
-            chain[current_words][next_word] = 0
+        chain.setdefault(current_words, {}).setdefault(next_word, 0)
         chain[current_words][next_word] += 1
     
     current_words = tuple(lemmatized_tokens[:order])
@@ -121,8 +108,7 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool, temper
             current_words = tuple(random.choice(lemmatized_tokens) for i in range(order))
 
         weights = list(chain[current_words].values())
-        if temperature > 0:
-            weights = [w ** (1 / temperature) for w in weights]
+        weights = [w ** (1 / temperature) for w in weights]
         
         next_word = random.choices(list(chain[current_words].keys()), weights=weights)[0]
         if next_word in string.punctuation or next_word in ["'s","'t","'ve","n't"]:
@@ -133,6 +119,15 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool, temper
 
     return generated_text.replace(original_text, '').replace(' ``','')
 
+def check_positive(value):
+    try:
+        value = int(value)
+        if value <= 0:
+            raise argparse.ArgumentTypeError("{} is not a positive integer".format(value))
+    except ValueError:
+        raise Exception("{} is not an integer".format(value))
+    return value
+
 def main() -> None:
     """Main function.
 
@@ -140,53 +135,30 @@ def main() -> None:
         ValueError: Order must be greater than 1
         ValueError: Length must be greater than 0
     """
-    argumentList = sys.argv[1:]
-    file_path = None
-    order = 1
-    length=200
-    verbose=False
-    temperature=0.5
+    file_path, order, length, verbose, temperature = None, 1, 200, False, 0.5
 
+    parser = argparse.ArgumentParser(description='Perform semantic analysis and generate text using Markov chains.')
+    parser.add_argument('-i', '--input', '-f', '--file', type=str, help='Input file path')
+    parser.add_argument('-o', '--order', type=check_positive, default=1, help='Order of the Markov chain')
+    parser.add_argument('-l', '--length', type=check_positive, default=200, help='Length of the generated text')
+    parser.add_argument('-t', '--temperature', type=check_positive, default=0.5, help='Temperature for the Markov chain')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
+    
     try:
-        arguments, _ = getopt.getopt(argumentList, "hvi:o:f:l:t:", ["ifile=", "order=", "file=", "length=", "temperature="])
-        if len(arguments) > 0:
-            for currentArgument, currentValue in arguments:
-                if currentArgument == "-h":
-                    print("Usage: python program.py -i <inputfile> -o <order>")
-                    sys.exit()
-                elif currentArgument == "-v":
-                    verbose=True
-                elif currentArgument in ("-i", "--ifile", "-f", "--file"):
-                    file_path = currentValue
-                elif currentArgument in ("-o", "--order"):
-                    try:
-                        order = int(currentValue)
-                        if order <= 1:
-                            raise ValueError("Order must be greater than 1")
-                    except ValueError as e:
-                        print(f"Invalid value for order: {e}")
-                        sys.exit(2)
-                elif currentArgument in ("-l", "--length"):
-                    try:
-                        length = int(currentValue)
-                        if length <= 1:
-                            raise ValueError("Length must be greater than 0")
-                    except ValueError as e:
-                        print(f"Invalid value for length: {e}")
-                        sys.exit(2)
-                elif currentArgument in ("-t", "--temperature"):
-                    try:
-                        temperature = int(currentValue)
-                        if length < 0:
-                            raise ValueError("Temperature must be greater than 0")
-                    except ValueError as e:
-                        print(f"Invalid value for temperature: {e}")
-                        sys.exit(2)
-
-    except getopt.error as err:
-        print(str(err))
-        print("Usage: python program.py -i <inputfile> -o <order>")
+        args = parser.parse_args()
+    except argparse.ArgumentTypeError as e:
+        print(e)
         sys.exit(2)
+    
+    if not args.input:
+        file_path = 'corpora/' + input('Enter the text file name: ')
+    else:
+        file_path = args.input
+
+    order = args.order
+    length = args.length
+    temperature = args.temperature
+    verbose = args.verbose
 
     if not(file_path):
         file_path = 'corpora/'+input('Enter the text file name: ')
