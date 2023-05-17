@@ -121,11 +121,11 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool, temper
 
 def check_positive(value):
     try:
-        value = int(value)
+        value = float(value)
         if value <= 0:
-            raise argparse.ArgumentTypeError("{} is not a positive integer".format(value))
+            raise argparse.ArgumentTypeError("{} is not a positive number".format(value))
     except ValueError:
-        raise Exception("{} is not an integer".format(value))
+        raise Exception("{} is not a number".format(value))
     return value
 
 def main() -> None:
@@ -155,8 +155,8 @@ def main() -> None:
     else:
         file_path = args.input
 
-    order = args.order
-    length = args.length
+    order = int(args.order)
+    length = int(args.length)
     temperature = args.temperature
     verbose = args.verbose
 
