@@ -20,7 +20,7 @@ def load_text(file_path: str) -> str:
     with open(file_path, 'r', encoding='utf-8') as f:
         return f.read()
 
-def lemmatize_tokens(tokens: str) -> list:
+def lemmatize_tokens(tokens: list[str]) -> list:
     """Lemmatize tokens using WordNet.
 
     Args:
@@ -37,7 +37,7 @@ def lemmatize_tokens(tokens: str) -> list:
                      token for token, pos_tag in nltk.pos_tag(tokens)]
     return lemmatized_tokens
 
-def correct_word(word: str, pos_tag: str) -> str:
+def correct_word(word: str, pos_tag: str) -> str | list[str]:
     """Correct a word using WordNet.
 
     Args:
@@ -52,9 +52,9 @@ def correct_word(word: str, pos_tag: str) -> str:
             pos_tag = 'a'  # Use 'a' instead of 'j' for adjectives to match wordnet's format
         synsets = wordnet.synsets(word, pos=pos_tag[0].lower())
         if synsets:
-            lemmas = {lemma.name() for synset in synsets for lemma in synset.lemmas()}
+            lemmas = {lemma.name() for synset in synsets for lemma in synset.lemmas()} # type: ignore
             if lemmas:
-                synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}'
+                synset_id = f'{pos_tag[0].lower()}.{synsets[0].offset():08d}.{synsets[0].pos()}.{lemmas.pop()}' # type: ignore
                 try:
                     most_similar = sorted(lemmas, key=lambda x: wordnet.wup_similarity(synsets[0], wordnet.synset(synset_id)) or 0, reverse=True)
                     return most_similar if most_similar else word #Return the most similar word if it exists
