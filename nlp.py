@@ -42,10 +42,10 @@ def correct_word(word: str, pos_tag: str) -> str | list[str]:
 
     Args:
         word (str): Word to correct.
-        pos_tag (str): Part-of-speech tag of the word.
+        pos_tag (str): Part of speech tag of the word.
 
     Returns:
-        str: Corrected word.
+        str | list[str]: Corrected word or list of similar words.
     """
     if pos_tag[0] in ('N', 'V', 'J'):
         if pos_tag.startswith('J'):
@@ -120,6 +120,18 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool, temper
     return generated_text.replace(original_text, '').replace(' ``','')
 
 def check_positive(value: float | int) -> float | int:
+    """Check if a value is positive.
+
+    Args:
+        value (float | int): Value to check.
+
+    Raises:
+        argparse.ArgumentTypeError: Not a positive number.
+        Exception: Not a number.
+
+    Returns:
+        float | int: Value if it is positive.
+    """
     try:
         value = float(value)
         if value <= 0:
