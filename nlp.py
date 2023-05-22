@@ -119,7 +119,7 @@ def generate_text(seed_text: str, length: int, order: int, verbose: bool, temper
 
     return generated_text.replace(original_text, '').replace(' ``','')
 
-def check_positive(value):
+def check_positive(value: float | int) -> float | int:
     try:
         value = float(value)
         if value <= 0:
