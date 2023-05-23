@@ -147,7 +147,7 @@ def main() -> None:
         ValueError: Order must be greater than 1
         ValueError: Length must be greater than 0
     """
-    file_path, order, length, verbose, temperature = None, 1, 200, False, 0.5
+    file_path, order, length, verbose, temperature, output = None, 1, 200, False, 0.5, None
 
     parser = argparse.ArgumentParser(description='Perform semantic analysis and generate text using Markov chains.')
     parser.add_argument('-i', '--input', '-f', '--file', type=str, help='Input file path')
@@ -155,6 +155,7 @@ def main() -> None:
     parser.add_argument('-l', '--length', type=check_positive, default=200, help='Length of the generated text')
     parser.add_argument('-t', '--temperature', type=check_positive, default=0.5, help='Temperature for the Markov chain')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
+    parser.add_argument('-O', '--output', type=str, help='Output file path')
     
     try:
         args = parser.parse_args()
@@ -171,6 +172,7 @@ def main() -> None:
     length = int(args.length)
     temperature = args.temperature
     verbose = args.verbose
+    output = args.output
 
     if not(file_path):
         file_path = 'corpora/'+input('Enter the text file name: ')
@@ -191,8 +193,11 @@ def main() -> None:
     print("\nThe results:---------------------------------------------------------------------")
     print(generated_text[0+leading].upper()+generated_text[1+leading:])
 
-    filename = input("\nEnter filename to write output to <Enter for skip>: ")
-    if filename:
+    if output:
+        filename = output
+    else:
+        filename = input("\nEnter filename to write output to <Enter for skip>: ")
+    if filename and not output=="None":
         with open(filename, 'w') as file:
             words = (generated_text[0+leading].upper()+generated_text[1+leading:]).split()
             line_length = 0
